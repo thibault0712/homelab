@@ -1,16 +1,17 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+    environment:
+      DOMAIN: ${VAULTWARDEN_DOMAIN}
+      SIGNUPS_ALLOWED: ${VAULTWARDEN_SIGNUPS_ALLOWED}
+    volumes:
+      - ./var/lib/vaultwarden/data:/data/
+    networks:
+      - public-gateway-network
 
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+networks:
+  # docker network create public-gateway-network
+  public-gateway-network:
+    external: true
