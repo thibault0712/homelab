@@ -7,7 +7,7 @@ services:
       DOMAIN: ${VAULTWARDEN_DOMAIN}
       SIGNUPS_ALLOWED: ${VAULTWARDEN_SIGNUPS_ALLOWED}
     volumes:
-      - ./var/lib/vaultwarden/data:/data/
+      - /var/lib/vaultwarden/data:/data/
     networks:
       - public-gateway-network
 
