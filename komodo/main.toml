@@ -1,0 +1,66 @@
+[[server]]
+name = "PROD-VM-FLATCORE"
+tags = ["Resource syncs"]
+[server.config]
+enabled = true
+
+##
+
+[[stack]]
+name = "vaultwarden"
+tags = ["Resource syncs"]
+[stack.config]
+server = "PROD-VM-FLATCORE"
+project_name = "vaultwarden"
+poll_for_updates = true
+auto_update = true
+linked_repo = "homelab"
+run_directory = "stacks/vaultwarden"
+environment = """
+VAULTWARDEN_DOMAIN=https://vaultwarden.thibaultfalezan.com
+VAULTWARDEN_SIGNUPS_ALLOWED=false
+"""
+
+##
+
+[[procedure]]
+name = "Backup Core Database"
+description = "Triggers the Core database backup at the scheduled time."
+tags = ["system", "Resource syncs"]
+config.schedule = "Every day at 01:00"
+
+[[procedure.config.stage]]
+name = "Stage 1"
+enabled = true
+executions = [
+  { execution.type = "BackupCoreDatabase", execution.params = {}, enabled = true }
+]
+
+##
+
+[[procedure]]
+name = "Global Auto Update"
+description = "Pulls and auto updates Stacks and Deployments using 'poll_for_updates' or 'auto_update'."
+tags = ["system", "Resource syncs"]
+config.schedule = "Every day at 03:00"
+
+[[procedure.config.stage]]
+name = "Stage 1"
+enabled = true
+executions = [
+  { execution.type = "GlobalAutoUpdate", execution.params = {}, enabled = true }
+]
+
+##
+
+[[procedure]]
+name = "Ressource ynchronization"
+tags = ["system", "Resource syncs"]
+config.schedule = "Every Sunday at midnight"
+
+[[procedure.config.stage]]
+name = "Stage 1"
+enabled = true
+executions = [
+  { execution.type = "CommitSync", execution.params.sync = "global-sync", enabled = true }
+]
