@@ -4,7 +4,7 @@ services:
     image: docker.io/library/redis:8
     restart: unless-stopped
     volumes:
-      - /var/lib/paperless/redis/data:/data
+      - /var/lib/paperless/redis/data:/var/lib/redis
     networks:
       - paperless-subnetwork
 
