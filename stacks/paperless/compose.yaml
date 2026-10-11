@@ -4,7 +4,7 @@ services:
     image: docker.io/library/redis:8
     restart: unless-stopped
     volumes:
-      - /var/lib/paperless/redis/data:/var/lib/redis
+      - /var/lib/paperless/redis/data:/data
     networks:
       - paperless-subnetwork
 
@@ -32,10 +32,10 @@ services:
       - public-gateway-network
       - paperless-subnetwork
     volumes:
-      - /var/lib/paperless/paperless/data:/var/lib/paperless/data
-      - /var/lib/paperless/paperless/media:/var/lib/paperless/media
-      - /var/lib/paperless/paperless/export:/var/lib/paperless/export
-      - /var/lib/paperless/paperless/consume:/var/lib/paperless/consume
+      - /var/lib/paperless/paperless/data:/usr/src/paperless/data/data
+      - /var/lib/paperless/paperless/media:/usr/src/paperless/data/media
+      - /var/lib/paperless/paperless/export:/usr/src/paperless/data/export
+      - /var/lib/paperless/paperless/consume:/usr/src/paperless/data/consume
     env_file: .env
     environment:
       PAPERLESS_REDIS: redis://broker:6379
