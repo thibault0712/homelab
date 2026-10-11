@@ -1,0 +1,72 @@
+services:
+
+  broker:
+    image: docker.io/library/redis:8
+    restart: unless-stopped
+    volumes:
+      - /var/lib/paperless/redis/data:/data
+    networks:
+      - paperless-subnetwork
+
+  db:
+    image: docker.io/library/postgres:18
+    restart: unless-stopped
+    volumes:
+      - /var/lib/paperless/postgresql/data:/var/lib/postgresql
+    environment:
+      POSTGRES_DB: ${PAPERLESS_DB_NAME}
+      POSTGRES_USER: ${PAPERLESS_DB_USER}
+      POSTGRES_PASSWORD: ${PAPERLESS_DB_PASSWORD}
+    networks:
+      - paperless-subnetwork
+
+  paperless:
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    restart: unless-stopped
+    depends_on:
+      - db
+      - broker
+      - gotenberg
+      - tika
+    networks:
+      - public-gateway-network
+      - paperless-subnetwork
+    volumes:
+      - /var/lib/paperless/paperless/data:/var/lib/paperless/data
+      - /var/lib/paperless/paperless/media:/var/lib/paperless/media
+      - /var/lib/paperless/paperless/export:/var/lib/paperless/export
+      - /var/lib/paperless/paperless/consume:/var/lib/paperless/consume
+    env_file: .env
+    environment:
+      PAPERLESS_REDIS: redis://broker:6379
+      PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
+      PAPERLESS_TIKA_ENDPOINT: http://tika:9998
+      PAPERLESS_DBHOST: db
+      PAPERLESS_DBPASS: ${PAPERLESS_DB_PASSWORD}
+      PAPERLESS_TIKA_ENABLED: ${PAPERLESS_TIKA_ENABLED}
+
+  gotenberg:
+    image: docker.io/gotenberg/gotenberg:8.25
+    restart: unless-stopped
+    networks:
+      - paperless-subnetwork
+    # The gotenberg chromium route is used to convert .eml files. We do not
+    # want to allow external content like tracking pixels or even javascript.
+    command:
+      - "gotenberg"
+      - "--chromium-disable-javascript=true"
+      - "--chromium-allow-list=file:///tmp/.*"
+
+  tika:
+    image: docker.io/apache/tika:latest
+    restart: unless-stopped
+    networks:
+      - paperless-subnetwork
+
+networks:
+  # docker network create public-gateway-network
+  public-gateway-network:
+    external: true
+
+  paperless-subnetwork:
+    driver: bridge
