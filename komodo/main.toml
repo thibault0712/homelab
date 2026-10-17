@@ -7,6 +7,34 @@ enabled = true
 ##
 
 [[stack]]
+name = "paperless"
+tags = ["Resource syncs"]
+[stack.config]
+server = "PROD-VM-FLATCORE"
+project_name = "paperless"
+poll_for_updates = true
+auto_update = true
+linked_repo = "homelab"
+run_directory = "stacks/paperless"
+environment = """
+PAPERLESS_TIME_ZONE=Europe/Paris
+PAPERLESS_OCR_LANGUAGE=fra
+PAPERLESS_OCR_LANGUAGES=eng
+PAPERLESS_SECRET_KEY=a798ebd05bd68c5e5505041b79fbbcbb95f1e912366e93ddc2bb3f15b488c979
+PAPERLESS_URL=https://paperless.thibaultfalezan.com
+PAPERLESS_CSRF_TRUSTED_ORIGINS=https://paperless.thibaultfalezan.com
+PAPERLESS_USE_X_FORWARD_HOST=true
+PAPERLESS_SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO,https
+PAPERLESS_TIKA_ENABLED=1
+
+PAPERLESS_DB_NAME=paperless
+PAPERLESS_DB_USER=paperless
+PAPERLESS_DB_PASSWORD=trYh=&)jv]1A=5c+q3KtZ*yi2L81
+"""
+
+##
+
+[[stack]]
 name = "vaultwarden"
 tags = ["Resource syncs"]
 [stack.config]
