@@ -9,7 +9,7 @@ services:
       - paperless-subnetwork
 
   db:
-    image: docker.io/library/postgres:18
+    image: docker.io/library/postgres:19
     restart: unless-stopped
     volumes:
       - /var/lib/paperless/postgresql/data:/var/lib/postgresql
